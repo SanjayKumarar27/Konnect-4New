@@ -1,0 +1,63 @@
+# Build Folders (bin and obj)
+bin/
+obj/
+.vs/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+
+# Build results
+*.dll
+*.exe
+*.app
+*.log
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Microsoft Visual Studio temporary files
+*.vspscc
+*.vssscc
+*.cache
+*.dbmdl
+*.pdb
+
+# Others
+*.ide
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+
+# DotCover
+*.dotCover
+
+# Rider
+.idea/
+*.sln.iml
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Runtime files
+*.runtimeconfig.json
+*.deps.json
+
+# Backup & Report files
+*.bak
+*.Report.*

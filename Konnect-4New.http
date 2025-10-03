@@ -1,0 +1,6 @@
+@Konnect_4New_HostAddress = http://localhost:5109
+
+GET {{Konnect_4New_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
