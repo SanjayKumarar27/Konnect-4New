@@ -23,9 +23,16 @@ namespace Konnect_4New.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserListDto>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Select(u => new UserListDto
+                {
+                    Username = u.Username,
+                    FullName = u.FullName,
+                    ProfileImageUrl = u.ProfileImageUrl
+                })
+                .ToListAsync();
         }
 
         // GET: api/Users/{id}
