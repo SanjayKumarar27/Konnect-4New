@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Konnect_4New.Models.Dtos
 {
+    public class UserListDto
+    {
+        public string Username { get; set; } = string.Empty;
+        public string? FullName { get; set; }
+        public string? ProfileImageUrl { get; set; }
+    }
     public class PostDto
     {
         public int PostId { get; set; }

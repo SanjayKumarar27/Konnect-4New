@@ -21,6 +21,30 @@ namespace Konnect_4.Controllers
         {
             _context = context;
         }
+        // GET COMMENTS BY POST ID
+        [HttpGet("post/{postId}")]
+        public async Task<IActionResult> GetCommentsByPost(int postId)
+        {
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null) return NotFound("Post not found.");
+
+            var comments = await _context.Comments
+                .Where(c => c.PostId == postId)
+                .Include(c => c.User) // include user to get username
+                .OrderBy(c => c.CreatedAt)
+                .Select(c => new CommentDto
+                {
+                    CommentId = c.CommentId,
+                    PostId = c.PostId,
+                    ParentCommentId = c.ParentCommentId,
+                    Content = c.Content,
+                    Username = c.User.Username,
+                    CreatedAt = c.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(comments);
+        }
 
         // CREATE COMMENT
         [HttpPost]
