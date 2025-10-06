@@ -15,6 +15,7 @@
 
     public class PostResponseDto
     {
+        public int PostUserId { get; set; }
         public int PostId { get; set; }
         public string? Content { get; set; }
         public string? ImageUrl { get; set; } // Changed from ImageBase64

@@ -95,9 +95,9 @@ namespace Konnect_4New.Controllers
             });
         }
 
-        // GET: api/users/{id}/profile
+        // GET: api/users/{id}/profile?currentUserId=123
         [HttpGet("{id}/profile")]
-        public async Task<IActionResult> GetUserProfile(int id)
+        public async Task<IActionResult> GetUserProfile(int id, [FromQuery] int currentUserId)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound("User not found.");
@@ -118,6 +118,10 @@ namespace Konnect_4New.Controllers
                 })
                 .ToListAsync();
 
+            // Check if the current user is following this profile
+            bool isFollowing = await _context.Followers
+                .AnyAsync(f => f.UserId == id && f.FollowerUserId == currentUserId && f.Status == "Accepted");
+
             var profile = new UserProfileDto
             {
                 UserId = user.UserId,
@@ -128,10 +132,12 @@ namespace Konnect_4New.Controllers
                 FollowersCount = followersCount,
                 FollowingCount = followingCount,
                 PostsCount = posts.Count,
-                Posts = posts
+                Posts = posts,
+                IsFollowing = isFollowing
             };
 
             return Ok(profile);
         }
+
     }
 }

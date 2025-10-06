@@ -107,6 +107,7 @@ namespace Konnect_4New.Controllers
                 .OrderByDescending(p => p.CreatedAt)
                 .Select(p => new PostResponseDto
                 {
+                    PostUserId = p.UserId,
                     PostId = p.PostId,
                     Content = p.Content,
                     ImageUrl = p.PostImageUrl, // Use URL directly
