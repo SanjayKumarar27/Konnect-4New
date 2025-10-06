@@ -28,6 +28,7 @@ namespace Konnect_4New.Controllers
             return await _context.Users
                 .Select(u => new UserListDto
                 {
+                    UserId = u.UserId, // Add UserId
                     Username = u.Username,
                     FullName = u.FullName,
                     ProfileImageUrl = u.ProfileImageUrl

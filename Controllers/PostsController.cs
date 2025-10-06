@@ -119,5 +119,30 @@ namespace Konnect_4New.Controllers
 
             return Ok(posts);
         }
+        // DELETE POST (only if user owns it)
+        [HttpDelete("{postId}")]
+        public async Task<IActionResult> DeletePost(int postId, [FromQuery] int userId)
+        {
+            var post = await _context.Posts
+                .Include(p => p.Comments)
+                .Include(p => p.Likes)
+                .FirstOrDefaultAsync(p => p.PostId == postId);
+
+            if (post == null)
+                return NotFound("Post not found.");
+
+            if (post.UserId != userId)
+                return Unauthorized("You can only delete your own posts.");
+
+            // Remove related likes and comments
+            _context.Comments.RemoveRange(post.Comments);
+            _context.Likes.RemoveRange(post.Likes);
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Post deleted successfully." });
+        }
+
     }
 }

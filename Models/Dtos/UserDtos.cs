@@ -6,6 +6,7 @@ namespace Konnect_4New.Models.Dtos
 {
     public class UserListDto
     {
+        public int UserId { get; set; }
         public string Username { get; set; } = string.Empty;
         public string? FullName { get; set; }
         public string? ProfileImageUrl { get; set; }
@@ -41,6 +42,7 @@ namespace Konnect_4New.Models.Dtos
 
     public class LoginDto
     {
+
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
