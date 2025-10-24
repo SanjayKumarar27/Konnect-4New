@@ -1,7 +1,5 @@
-﻿
-using Konnect_4New.Models.Dtos;
+﻿using Konnect_4New.Models.Dtos;
 using Konnect_4New.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,9 +16,51 @@ namespace Konnect_4.Controllers
             _context = context;
         }
 
-        // POST: api/follow (Follow or Request)
+        // ✅ NEW: GET Followers List - api/follow/followers/{userId}
+        [HttpGet("followers/{userId}")]
+        public async Task<ActionResult<IEnumerable<FollowUserDto>>> GetFollowers(int userId)
+        {
+            var followers = await _context.Followers
+                .Where(f => f.UserId == userId && f.Status == "Accepted")
+                .Join(_context.Users,
+                    f => f.FollowerUserId,
+                    u => u.UserId,
+                    (f, u) => new FollowUserDto
+                    {
+                        UserId = u.UserId,
+                        Username = u.Username,
+                        FullName = u.FullName,
+                        ProfileImageUrl = u.ProfileImageUrl
+                    })
+                .ToListAsync();
+
+            return Ok(followers);
+        }
+
+        // ✅ NEW: GET Following List - api/follow/following/{userId}
+        [HttpGet("following/{userId}")]
+        public async Task<ActionResult<IEnumerable<FollowUserDto>>> GetFollowing(int userId)
+        {
+            var following = await _context.Followers
+                .Where(f => f.FollowerUserId == userId && f.Status == "Accepted")
+                .Join(_context.Users,
+                    f => f.UserId,
+                    u => u.UserId,
+                    (f, u) => new FollowUserDto
+                    {
+                        UserId = u.UserId,
+                        Username = u.Username,
+                        FullName = u.FullName,
+                        ProfileImageUrl = u.ProfileImageUrl
+                    })
+                .ToListAsync();
+
+            return Ok(following);
+        }
+
+        // POST: Follow
         [HttpPost("follow/{followerUserId}")]
-        public async Task<IActionResult> FollowUser(int followerUserId, FollowDto dto)
+        public async Task<IActionResult> FollowUser(int followerUserId, [FromBody] FollowDto dto)
         {
             var targetUser = await _context.Users.FindAsync(dto.TargetUserId);
             if (targetUser == null) return NotFound("Target user not found.");
@@ -34,7 +74,7 @@ namespace Konnect_4.Controllers
             {
                 UserId = dto.TargetUserId,
                 FollowerUserId = followerUserId,
-                Status= targetUser.IsPrivate==true ? "ending" : "Accepted"
+                Status = targetUser.IsPrivate ? "Pending" : "Accepted" // Fixed: "ending" → "Pending"
             };
 
             _context.Followers.Add(follower);
@@ -42,14 +82,14 @@ namespace Konnect_4.Controllers
 
             return Ok(new
             {
-                message = targetUser.IsPrivate==true ? "Follow request sent." : "You are now following this user.",
+                message = targetUser.IsPrivate ? "Follow request sent." : "You are now following this user.",
                 status = follower.Status
             });
         }
 
-        // DELETE: api/follow/unfollow
+        // DELETE: Unfollow
         [HttpDelete("unfollow/{followerUserId}")]
-        public async Task<IActionResult> UnfollowUser(int followerUserId, FollowDto dto)
+        public async Task<IActionResult> UnfollowUser(int followerUserId, [FromBody] FollowDto dto)
         {
             var follow = await _context.Followers
                 .FirstOrDefaultAsync(f => f.UserId == dto.TargetUserId && f.FollowerUserId == followerUserId);
@@ -62,9 +102,9 @@ namespace Konnect_4.Controllers
             return Ok(new { message = "Unfollowed successfully." });
         }
 
-        // PUT: api/follow/accept
+        // PUT: Accept Request
         [HttpPut("accept/{userId}")]
-        public async Task<IActionResult> AcceptFollowRequest(int userId, FollowActionDto dto)
+        public async Task<IActionResult> AcceptFollowRequest(int userId, [FromBody] FollowActionDto dto)
         {
             var request = await _context.Followers
                 .FirstOrDefaultAsync(f => f.FollowerId == dto.RequestId && f.UserId == userId);
@@ -78,35 +118,5 @@ namespace Konnect_4.Controllers
 
             return Ok(new { message = "Follow request accepted." });
         }
-
-        // POST: api/follow/followback
-        [HttpPost("followback/{userId}")]
-        public async Task<IActionResult> FollowBack(int userId, FollowDto dto)
-        {
-            var targetUser = await _context.Users.FindAsync(dto.TargetUserId);
-            if (targetUser == null) return NotFound("Target user not found.");
-
-            var existing = await _context.Followers
-                .FirstOrDefaultAsync(f => f.UserId == dto.TargetUserId && f.FollowerUserId == userId);
-
-            if (existing != null) return BadRequest("Already following or request pending.");
-
-            var follower = new Follower
-            {
-                UserId = dto.TargetUserId,
-                FollowerUserId = userId,
-                Status = targetUser.IsPrivate == true ? "Pending" : "Accepted"
-            };
-
-            _context.Followers.Add(follower);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                message = targetUser.IsPrivate == true ? "Follow back request sent." : "You are now following back.",
-                status = follower.Status
-            });
-        }
-    
-}
+    }
 }
