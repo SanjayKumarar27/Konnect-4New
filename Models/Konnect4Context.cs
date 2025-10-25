@@ -18,6 +18,8 @@ public partial class Konnect4Context : DbContext
     public virtual DbSet<Comment> Comments { get; set; }
 
     public virtual DbSet<Follower> Followers { get; set; }
+    public DbSet<Admin> Admins { get; set; }
+
 
     public virtual DbSet<Like> Likes { get; set; }
 

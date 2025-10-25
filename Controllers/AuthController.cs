@@ -1,6 +1,7 @@
 ﻿using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
 using Konnect_4New.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace Konnect_4New.Controllers
         }
 
         // POST: api/auth/register
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -41,6 +43,7 @@ namespace Konnect_4New.Controllers
         }
 
         // POST: api/auth/login
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
