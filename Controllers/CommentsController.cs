@@ -39,6 +39,7 @@ namespace Konnect_4.Controllers
                     ParentCommentId = c.ParentCommentId,
                     Content = c.Content,
                     Username = c.User.Username,
+                    UserId = c.User.UserId,
                     CreatedAt = c.CreatedAt
                 })
                 .ToListAsync();

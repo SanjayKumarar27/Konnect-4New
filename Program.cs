@@ -1,4 +1,4 @@
-
+using Konnect_4New.Hubs;
 using Konnect_4New.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +10,7 @@ namespace Konnect_4
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Add CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngularApp",
@@ -17,39 +18,42 @@ namespace Konnect_4
                     {
                         policy.WithOrigins("http://localhost:4200")
                               .AllowAnyHeader()
-                              .AllowAnyMethod();
-                    });
-                options.AddPolicy("AllOrigins",
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin()
-                              .AllowAnyHeader()
-                              .AllowAnyMethod();
+                              .AllowAnyMethod()
+                              .AllowCredentials(); // Required for SignalR
                     });
             });
-            // Add services to the container.
 
+            // Add services
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<Konnect4Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("mycon")));
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddDbContext<Konnect4Context>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("mycon")));
+
+            // Add SignalR
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+            });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors("AllOrigins");
+
+            app.UseCors("AllowAngularApp");
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
+
+            // Map SignalR Hub
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }

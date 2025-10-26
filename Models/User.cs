@@ -25,6 +25,7 @@ public partial class User
 
     public DateTime UpdatedAt { get; set; }
 
+    // Relationships
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     public virtual ICollection<Follower> FollowerFollowerUsers { get; set; } = new List<Follower>();
@@ -33,9 +34,12 @@ public partial class User
 
     public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
 
-    public virtual ICollection<Message> MessageReceivers { get; set; } = new List<Message>();
-
-    public virtual ICollection<Message> MessageSenders { get; set; } = new List<Message>();
-
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    // Messaging relationships
+    public virtual ICollection<Message> MessagesSent { get; set; } = new List<Message>();
+
+    public virtual ICollection<ConversationParticipant> ConversationParticipants { get; set; } = new List<ConversationParticipant>();
+
+    public virtual ICollection<MessageReadStatus> MessageReadStatuses { get; set; } = new List<MessageReadStatus>();
 }
