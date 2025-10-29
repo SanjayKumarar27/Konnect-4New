@@ -76,3 +76,66 @@ CREATE TABLE Messages (
     FOREIGN KEY (ReceiverId) REFERENCES Users(UserId) ON DELETE NO ACTION
 );
 GO
+
+
+
+-- Drop old Messages table
+DROP TABLE IF EXISTS Messages;
+GO
+
+-- Create Conversations table
+CREATE TABLE Conversations (
+    ConversationId INT IDENTITY(1,1) PRIMARY KEY,
+    LastMessageAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- Create ConversationParticipants table
+CREATE TABLE ConversationParticipants (
+    ParticipantId INT IDENTITY(1,1) PRIMARY KEY,
+    ConversationId INT NOT NULL,
+    UserId INT NOT NULL,
+    JoinedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    LastReadAt DATETIME2 NULL,
+    FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE CASCADE,
+    CONSTRAINT UQ_ConversationUser UNIQUE(ConversationId, UserId)
+);
+GO
+
+-- Create Messages table (new structure)
+CREATE TABLE Messages (
+    MessageId INT IDENTITY(1,1) PRIMARY KEY,
+    ConversationId INT NOT NULL,
+    SenderId INT NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    MessageType NVARCHAR(20) NOT NULL DEFAULT 'Text' CHECK (MessageType IN ('Text', 'Image', 'File')),
+    FileUrl NVARCHAR(500) NULL,
+    SentAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    IsEdited BIT NOT NULL DEFAULT 0,
+    IsDeleted BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (ConversationId) REFERENCES Conversations(ConversationId) ON DELETE CASCADE,
+    FOREIGN KEY (SenderId) REFERENCES Users(UserId) ON DELETE CASCADE
+);
+GO
+
+-- Create MessageReadStatus table
+CREATE TABLE MessageReadStatus (
+    ReadStatusId INT IDENTITY(1,1) PRIMARY KEY,
+    MessageId INT NOT NULL,
+    UserId INT NOT NULL,
+    ReadAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (MessageId) REFERENCES Messages(MessageId) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES Users(UserId) ON DELETE NO ACTION,
+    CONSTRAINT UQ_MessageRead UNIQUE(MessageId, UserId)
+);
+GO
+
+-- Create indexes
+CREATE INDEX IX_Messages_ConversationId ON Messages(ConversationId);
+CREATE INDEX IX_Messages_SenderId ON Messages(SenderId);
+CREATE INDEX IX_Messages_SentAt ON Messages(SentAt DESC);
+CREATE INDEX IX_ConversationParticipants_UserId ON ConversationParticipants(UserId);
+CREATE INDEX IX_ConversationParticipants_ConversationId ON ConversationParticipants(ConversationId);
+GO
