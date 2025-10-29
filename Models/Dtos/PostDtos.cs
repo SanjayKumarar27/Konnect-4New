@@ -4,7 +4,8 @@
     {
         public int UserId { get; set; }
         public string? Content { get; set; }
-        public string? ImageUrl { get; set; } // Changed from IFormFile
+        public string? ImageUrl { get; set; }
+        public string? Category {  get; set; }
     }
 
     public class UpdatePostDto
