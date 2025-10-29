@@ -139,3 +139,8 @@ CREATE INDEX IX_Messages_SentAt ON Messages(SentAt DESC);
 CREATE INDEX IX_ConversationParticipants_UserId ON ConversationParticipants(UserId);
 CREATE INDEX IX_ConversationParticipants_ConversationId ON ConversationParticipants(ConversationId);
 GO
+
+
+
+    ALTER TABLE Posts
+    ADD Category NVARCHAR(50) NULL;
