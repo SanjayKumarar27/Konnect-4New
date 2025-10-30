@@ -34,8 +34,8 @@ public partial class Konnect4Context : DbContext
     public virtual DbSet<MessageReadStatus> MessageReadStatus { get; set; }
 
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:mycon");
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseSqlServer("Name=ConnectionStrings:mycon");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
