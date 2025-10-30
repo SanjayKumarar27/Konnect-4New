@@ -53,6 +53,7 @@ public partial class Konnect4Context : DbContext
             entity.Property(e => e.Bio).HasMaxLength(500);
             entity.Property(e => e.ProfileImageUrl).HasMaxLength(500);
             entity.Property(e => e.IsPrivate).HasDefaultValue(false);
+            entity.Property(e => e.Role).HasMaxLength(20).HasDefaultValue("User");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
         });

@@ -144,3 +144,26 @@ GO
 
     ALTER TABLE Posts
     ADD Category NVARCHAR(50) NULL;
+
+
+
+    -- SQL Migration: Add Role column to Users table
+ALTER TABLE Users
+ADD [Role] NVARCHAR(20) NOT NULL DEFAULT 'User';
+
+-- Seed Admin Role (Run this once)
+-- First, find an existing user ID (e.g., 1) and make them admin
+
+-- Or create a new admin user if needed
+INSERT INTO Users (Username, Email, PasswordHash, FullName, [Role], CreatedAt, UpdatedAt)
+VALUES (
+    'admin2',
+    'admin2@konnect4.com',
+    '$2a$11$0V0z19WISrBblHJ6zpyoJ.hu7QyytYplXORHge./deURsuoG7w5U2', -- hashed 'admin123'
+    'Administrator',
+    'Admin',
+    GETDATE(),
+    GETDATE()
+);
+
+select * from Users
