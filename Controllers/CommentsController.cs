@@ -1,6 +1,7 @@
 ﻿
 using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace Konnect_4.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class CommentsController : ControllerBase
     {
         private readonly Konnect4Context _context;

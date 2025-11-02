@@ -1,4 +1,4 @@
-﻿using Konnect_4New.Models;
+﻿﻿using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +101,9 @@ namespace Konnect_4New.Hubs
         // Send a message
         public async Task SendMessage(SendMessageDto dto, int senderId)
         {
+            var istTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+
             try
             {
                 // Find or create conversation
@@ -114,7 +117,7 @@ namespace Konnect_4New.Hubs
                     Content = dto.Content,
                     MessageType = dto.MessageType,
                     FileUrl = dto.FileUrl,
-                    SentAt = DateTime.UtcNow,
+                    SentAt = istTime,
                     IsEdited = false,
                     IsDeleted = false
                 };
@@ -122,7 +125,7 @@ namespace Konnect_4New.Hubs
                 _context.Messages.Add(message);
 
                 // Update conversation last message time
-                conversation.LastMessageAt = DateTime.UtcNow;
+                conversation.LastMessageAt = istTime;
 
                 await _context.SaveChangesAsync();
 
@@ -180,6 +183,9 @@ namespace Konnect_4New.Hubs
         // Mark messages as read
         public async Task MarkAsRead(int conversationId, int userId)
         {
+            var istTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+
             try
             {
                 // Get all unread messages in this conversation
@@ -195,7 +201,7 @@ namespace Konnect_4New.Hubs
                     {
                         MessageId = message.MessageId,
                         UserId = userId,
-                        ReadAt = DateTime.UtcNow
+                        ReadAt = istTime
                     });
                 }
 
@@ -205,7 +211,7 @@ namespace Konnect_4New.Hubs
 
                 if (participant != null)
                 {
-                    participant.LastReadAt = DateTime.UtcNow;
+                    participant.LastReadAt = istTime;
                 }
 
                 await _context.SaveChangesAsync();
@@ -255,6 +261,9 @@ namespace Konnect_4New.Hubs
         // Helper method to get or create conversation
         private async Task<Conversation> GetOrCreateConversation(int user1Id, int user2Id)
         {
+            var istTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+
             // Check if conversation exists between these two users
             var existingConversation = await _context.ConversationParticipants
                 .Where(cp => cp.UserId == user1Id)
@@ -270,8 +279,8 @@ namespace Konnect_4New.Hubs
             // Create new conversation
             var conversation = new Conversation
             {
-                CreatedAt = DateTime.UtcNow,
-                LastMessageAt = DateTime.UtcNow
+                CreatedAt = istTime,
+                LastMessageAt = istTime
             };
 
             _context.Conversations.Add(conversation);
@@ -283,13 +292,13 @@ namespace Konnect_4New.Hubs
                 {
                     ConversationId = conversation.ConversationId,
                     UserId = user1Id,
-                    JoinedAt = DateTime.UtcNow
+                    JoinedAt = istTime
                 },
                 new ConversationParticipant
                 {
                     ConversationId = conversation.ConversationId,
                     UserId = user2Id,
-                    JoinedAt = DateTime.UtcNow
+                    JoinedAt = istTime
                 }
             );
 

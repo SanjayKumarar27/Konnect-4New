@@ -57,4 +57,14 @@ namespace Konnect_4New.Models.Dtos
         public string Password { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
     }
+
+    public class RefreshTokenDto
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+
+    public class ValidateTokenDto
+    {
+        public string Token { get; set; } = string.Empty;
+    }
 }

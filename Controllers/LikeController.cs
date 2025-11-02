@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Konnect_4New.Models;
+﻿using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Konnect_4.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    
     public class LikesController : ControllerBase
     {
         private readonly Konnect4Context _context;

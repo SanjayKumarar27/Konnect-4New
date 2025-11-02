@@ -178,7 +178,7 @@ namespace Konnect_4New.Controllers
                         PostId = p.PostId,
                         Content = p.Content ?? string.Empty,
                         Username = p.User.Username,
-                        ImageUrl = p.PostImageUrl,  
+                        ImageUrl = p.PostImageUrl,
                         UserId = p.UserId,
                         LikesCount = p.Likes.Count,
                         CommentsCount = p.Comments.Count,

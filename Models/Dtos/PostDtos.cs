@@ -12,6 +12,7 @@
     {
         public string? Content { get; set; }
         public string? ImageUrl { get; set; } // Changed from IFormFile
+        public string? Category { get; set; }
     }
 
     public class PostResponseDto
@@ -24,5 +25,6 @@
         public string Username { get; set; } = string.Empty;
         public int LikesCount { get; set; }
         public int CommentsCount { get; set; }
+        public string ? ProfileImageUrl { get; set; }
     }
 }

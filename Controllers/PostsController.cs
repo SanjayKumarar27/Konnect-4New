@@ -1,6 +1,6 @@
-﻿using Konnect_4New.Models;
+﻿﻿using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,13 +12,16 @@ namespace Konnect_4New.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostsController : ControllerBase
+     
+    public class PostsController : BaseController
     {
         private readonly Konnect4Context _context;
+
         public PostsController(Konnect4Context context)
         {
             _context = context;
         }
+
 
         // CREATE POST
         [HttpPost]
@@ -41,25 +44,78 @@ namespace Konnect_4New.Controllers
             return Ok(new { message = "Post created successfully.", postId = post.PostId });
         }
 
-        // UPDATE POST (only if user owns it)
+        // UPDATE POST
+        // UPDATE POST
         [HttpPut("{postId}")]
         public async Task<IActionResult> UpdatePost(int postId, [FromBody] UpdatePostDto dto, [FromQuery] int userId)
         {
             var post = await _context.Posts.FindAsync(postId);
             if (post == null) return NotFound("Post not found.");
             if (post.UserId != userId) return Unauthorized("You can only update your own posts.");
+
+            // Update Content if provided
             if (!string.IsNullOrWhiteSpace(dto.Content))
                 post.Content = dto.Content;
+
+            // Update ImageUrl if provided
             if (dto.ImageUrl != null)
                 post.PostImageUrl = dto.ImageUrl;
+
+            // Update Category in lowercase if provided
+            if (!string.IsNullOrWhiteSpace(dto.Category))
+                post.Category = dto.Category.Trim().ToLower();
+
+            // Update timestamps
             post.UpdatedAt = DateTime.UtcNow;
-            _context.Posts.Update(post);
+
+            // Track entity changes explicitly
+            _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+
             return Ok(new { message = "Post updated successfully." });
+        }
+
+
+        // GET POST BY ID (For Editing)
+        [HttpGet("{postId}")]
+        public async Task<IActionResult> GetPostById(int postId, [FromQuery] int userId)
+        {
+            try
+            {
+
+                var post = await _context.Posts
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.PostId == postId);
+
+                if (post == null)
+                    return NotFound(new { message = "Post not found." });
+
+                // Check if the current user owns this post
+                if (post.UserId != userId)
+                    return Forbid("You can only view your own posts for editing.");
+
+                var postData = new
+                {
+                    post.PostId,
+                    post.UserId,
+                    post.Content,
+                    ImageUrl = post.PostImageUrl,
+                    post.Category,
+                    post.CreatedAt,
+                    post.UpdatedAt
+                };
+
+                return Ok(postData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to load post", error = ex.Message });
+            }
         }
 
         // GET USER'S POSTS
         [HttpGet("user/{userId}")]
+        [AllowAnonymous] // ✅ Allow anyone to view public posts
         public async Task<IActionResult> GetUserPosts(int userId)
         {
             var posts = await _context.Posts
@@ -79,9 +135,11 @@ namespace Konnect_4New.Controllers
                     CommentsCount = p.Comments.Count
                 })
                 .ToListAsync();
+
             return Ok(posts);
         }
 
+        // GET FEED
         // GET POSTS FROM FOLLOWING USERS
         [HttpGet("feed/{userId}")]
         public async Task<IActionResult> GetFeed(int userId)
@@ -105,13 +163,14 @@ namespace Konnect_4New.Controllers
                     CreatedAt = p.CreatedAt,
                     Username = p.User.Username,
                     LikesCount = p.Likes.Count,
-                    CommentsCount = p.Comments.Count
+                    CommentsCount = p.Comments.Count,
+                    ProfileImageUrl = p.User.ProfileImageUrl,
                 })
                 .ToListAsync();
             return Ok(posts);
         }
 
-        // DELETE POST (only if user owns it)
+        // DELETE POST
         [HttpDelete("{postId}")]
         public async Task<IActionResult> DeletePost(int postId, [FromQuery] int userId)
         {
@@ -130,10 +189,10 @@ namespace Konnect_4New.Controllers
             return Ok(new { message = "Post deleted successfully." });
         }
 
-        // ————————————————————————
-        // UPDATED: Explore with case-insensitive category filter
-        // ————————————————————————
+
+        // EXPLORE POSTS
         [HttpGet("explore")]
+        [AllowAnonymous] // ✅ Public endpoint
         public async Task<IActionResult> GetExplorePosts([FromQuery] string? category = null)
         {
             try
@@ -146,9 +205,8 @@ namespace Konnect_4New.Controllers
 
                 if (!string.IsNullOrWhiteSpace(category))
                 {
-                    var searchCat = category.Trim().ToLower();  // ← Normalize input
-                    query = query.Where(p => p.Category != null &&
-                                            p.Category.ToLower() == searchCat);  // ← Case-insensitive match
+                    var searchCat = category.Trim().ToLower();
+                    query = query.Where(p => p.Category != null && p.Category.ToLower() == searchCat);
                 }
 
                 var randomPosts = await query

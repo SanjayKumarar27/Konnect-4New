@@ -1,5 +1,6 @@
-﻿using Konnect_4New.Models;
+﻿﻿using Konnect_4New.Models;
 using Konnect_4New.Models.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +76,8 @@ namespace Konnect_4New.Controllers
                 user.ProfileImageUrl = dto.ProfileImageUrl; // Store the provided URL directly
             }
 
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, 
+                TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
