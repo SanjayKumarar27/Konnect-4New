@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konnect-4New", "Konnect-4New.csproj", "{95046CE2-71F8-4FEC-89B0-75A59536ED20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "..\Tests\Tests.csproj", "{3C1344F4-7A93-4308-9F33-1577DFBF1A10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\Test\Test.csproj", "{0E190AD7-624B-4483-A1DA-1C7EDE311B2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{95046CE2-71F8-4FEC-89B0-75A59536ED20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95046CE2-71F8-4FEC-89B0-75A59536ED20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95046CE2-71F8-4FEC-89B0-75A59536ED20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C1344F4-7A93-4308-9F33-1577DFBF1A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C1344F4-7A93-4308-9F33-1577DFBF1A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C1344F4-7A93-4308-9F33-1577DFBF1A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C1344F4-7A93-4308-9F33-1577DFBF1A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E190AD7-624B-4483-A1DA-1C7EDE311B2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E190AD7-624B-4483-A1DA-1C7EDE311B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E190AD7-624B-4483-A1DA-1C7EDE311B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E190AD7-624B-4483-A1DA-1C7EDE311B2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
